@@ -29,8 +29,12 @@ interface HelpshiftProps {
   style?: ViewStyle;
 }
 
+function helpshiftAvailable() {
+  return "RNTHelpshift" in NativeModules.UIManager;
+}
+
 function getHelp() {
-  if ("RNTHelpshift" in NativeModules.UIManager) {
+  if (helpshiftAvailable()) {
     return requireNativeComponent("RNTHelpshift");
   }
   return View;
@@ -74,6 +78,8 @@ class Helpshift extends React.PureComponent<HelpshiftProps> {
     RNHelpshift
       ? RNHelpshift.requestUnreadMessagesCount()
       : console.warn(MODULE_UNAVAILABLE_WARNING);
+
+  static nativeModuleAvailable = helpshiftAvailable;
 
   static eventEmitter = RNHelpshift
     ? new NativeEventEmitter(RNHelpshift)
