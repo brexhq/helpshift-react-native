@@ -19,12 +19,14 @@ interface HelpshiftProps {
     config: HelpshiftConfig;
     style?: ViewStyle;
 }
+declare function isHelpshiftAvailable(): boolean;
 declare class Helpshift extends React.PureComponent<HelpshiftProps> {
     render(): JSX.Element;
     static init: (apiKey: string, domain: string, appId: string) => any;
     static login: (user: HelpshiftUser) => any;
     static logout: () => any;
     static requestUnreadMessagesCount: () => any;
+    static isAvailable: typeof isHelpshiftAvailable;
     static eventEmitter: import("react-native").EventEmitter | {
         once: () => void;
         addListener: () => void;

@@ -1,7 +1,10 @@
 import React from "react";
 import { NativeEventEmitter, NativeModules, requireNativeComponent, View } from "react-native";
+function isHelpshiftAvailable() {
+    return "RNTHelpshift" in NativeModules.UIManager;
+}
 function getHelp() {
-    if ("RNTHelpshift" in NativeModules.UIManager) {
+    if (isHelpshiftAvailable()) {
         return requireNativeComponent("RNTHelpshift");
     }
     return View;
@@ -33,6 +36,7 @@ Helpshift.logout = () => RNHelpshift
 Helpshift.requestUnreadMessagesCount = () => RNHelpshift
     ? RNHelpshift.requestUnreadMessagesCount()
     : console.warn(MODULE_UNAVAILABLE_WARNING);
+Helpshift.isAvailable = isHelpshiftAvailable;
 Helpshift.eventEmitter = RNHelpshift
     ? new NativeEventEmitter(RNHelpshift)
     : mockEmitter;
