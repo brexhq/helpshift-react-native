@@ -26,6 +26,8 @@ declare class Helpshift extends React.PureComponent<HelpshiftProps> {
     static login: (user: HelpshiftUser) => any;
     static logout: () => any;
     static requestUnreadMessagesCount: () => any;
+    static showConversationWithCIFs: (cifs: object) => any;
+    static showConversation: () => any;
     static isAvailable: typeof isHelpshiftAvailable;
     static eventEmitter: import("react-native").EventEmitter | {
         once: () => void;

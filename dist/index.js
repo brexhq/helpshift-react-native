@@ -36,6 +36,12 @@ Helpshift.logout = () => RNHelpshift
 Helpshift.requestUnreadMessagesCount = () => RNHelpshift
     ? RNHelpshift.requestUnreadMessagesCount()
     : console.warn(MODULE_UNAVAILABLE_WARNING);
+Helpshift.showConversationWithCIFs = (cifs) => RNHelpshift
+    ? RNHelpshift.showConversationWithCIFs(cifs)
+    : console.warn(MODULE_UNAVAILABLE_WARNING);
+Helpshift.showConversation = () => RNHelpshift
+    ? RNHelpshift.showConversation()
+    : console.warn(MODULE_UNAVAILABLE_WARNING);
 Helpshift.isAvailable = isHelpshiftAvailable;
 Helpshift.eventEmitter = RNHelpshift
     ? new NativeEventEmitter(RNHelpshift)

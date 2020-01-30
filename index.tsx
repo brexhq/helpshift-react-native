@@ -79,6 +79,16 @@ class Helpshift extends React.PureComponent<HelpshiftProps> {
       ? RNHelpshift.requestUnreadMessagesCount()
       : console.warn(MODULE_UNAVAILABLE_WARNING);
 
+  static showConversationWithCIFs = (cifs: object) =>
+    RNHelpshift
+      ? RNHelpshift.showConversationWithCIFs(cifs)
+      : console.warn(MODULE_UNAVAILABLE_WARNING);
+
+  static showConversation = () =>
+    RNHelpshift
+      ? RNHelpshift.showConversation()
+      : console.warn(MODULE_UNAVAILABLE_WARNING);
+
   static isAvailable = isHelpshiftAvailable;
 
   static eventEmitter = RNHelpshift
