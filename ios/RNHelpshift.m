@@ -160,7 +160,7 @@ RCT_EXPORT_MODULE(RNTHelpshift)
 
 RCT_CUSTOM_VIEW_PROPERTY(config, NSDictionary, RNTHelpshiftManager) {
     HelpshiftInstallConfigBuilder *installConfigBuilder = [[HelpshiftInstallConfigBuilder alloc] init];
-    installConfigBuilder.enableAutomaticThemeSwitching = YES;
+    installConfigBuilder.enableAutomaticThemeSwitching = NO;
     [HelpshiftCore initializeWithProvider:[HelpshiftSupport sharedInstance]];
     [HelpshiftCore installForApiKey:json[@"apiKey"]
                          domainName:json[@"domain"]
