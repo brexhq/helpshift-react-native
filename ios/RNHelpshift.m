@@ -12,7 +12,16 @@
 
 -(id) init {
     self = [super init];
+    HelpshiftInstallConfigBuilder *installConfigBuilder = [[HelpshiftInstallConfigBuilder alloc] init];
+    installConfigBuilder.enableAutomaticThemeSwitching = NO;
+    [HelpshiftCore initializeWithProvider:[HelpshiftSupport sharedInstance]];
+
+    NSString *apiKey = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"helpshiftApiKey"];
+    NSString *domainName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"helpshiftDomainName"];
+    NSString *appID = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"helpshiftAppID"];
+    [HelpshiftCore installForApiKey:apiKey domainName:domainName appID:appID withConfig:installConfigBuilder.build];
     [[HelpshiftSupport sharedInstance] setDelegate:self];
+    [HelpshiftSupport pauseDisplayOfInAppNotification:YES];   
     return self;
 }
 
@@ -31,10 +40,7 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(init:(NSString *)apiKey domain:(NSString *)domain appId:(NSString *)appId)
 {
-    HelpshiftInstallConfigBuilder *installConfigBuilder = [[HelpshiftInstallConfigBuilder alloc] init];
-    installConfigBuilder.enableAutomaticThemeSwitching = NO;
-    [HelpshiftCore initializeWithProvider:[HelpshiftSupport sharedInstance]];
-    [HelpshiftCore installForApiKey:apiKey domainName:domain appID:appId withConfig:installConfigBuilder.build];
+    // Ignored on iOS
 }
 
 RCT_EXPORT_METHOD(login:(NSDictionary *)user)
@@ -160,7 +166,7 @@ RCT_EXPORT_MODULE(RNTHelpshift)
 
 RCT_CUSTOM_VIEW_PROPERTY(config, NSDictionary, RNTHelpshiftManager) {
     HelpshiftInstallConfigBuilder *installConfigBuilder = [[HelpshiftInstallConfigBuilder alloc] init];
-    installConfigBuilder.enableAutomaticThemeSwitching = NO;
+    installConfigBuilder.enableAutomaticThemeSwitching = YES;
     [HelpshiftCore initializeWithProvider:[HelpshiftSupport sharedInstance]];
     [HelpshiftCore installForApiKey:json[@"apiKey"]
                          domainName:json[@"domain"]
