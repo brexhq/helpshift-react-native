@@ -132,7 +132,7 @@ public class RNHelpshiftModule extends ReactContextBaseJavaModule implements Sup
                 Integer count = countData.getInt("value");
                 WritableMap params = Arguments.createMap();
                 params.putInt("count", count);
-                sendEvent(mReactContext, "didReceiveUnreadMessagesCount", params);
+                sendEvent(mReactContext, "Helpshift/DidReceiveUnreadMessagesCount", params);
             }
         };
 
