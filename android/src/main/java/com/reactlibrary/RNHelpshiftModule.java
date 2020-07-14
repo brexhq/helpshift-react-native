@@ -141,7 +141,7 @@ public class RNHelpshiftModule extends ReactContextBaseJavaModule implements Sup
                 Integer count = countData.getInt("value");
                 WritableMap params = Arguments.createMap();
                 params.putInt("count", count);
-                sendEvent(mReactContext, "didReceiveUnreadMessagesCount", params);
+                sendEvent(mReactContext, "Helpshift/DidReceiveUnreadMessagesCount", params);
             }
         };
 
@@ -219,10 +219,10 @@ public class RNHelpshiftModule extends ReactContextBaseJavaModule implements Sup
     public void displayAttachmentFile(File attachmentFile) {}
 
     @Override
-    public void didReceiveNotification(int newMessagesCount) {
+    public void didReceiveNotification(int count) {
         Log.d("Helpshift", "didReceiveNotification");
         WritableMap params = Arguments.createMap();
-        params.putInt("newMessagesCount", newMessagesCount);
+        params.putInt("count", count);
         sendEvent(mReactContext, "Helpshift/DidReceiveNotification", params);
     }
 
