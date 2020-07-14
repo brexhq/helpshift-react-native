@@ -16,5 +16,5 @@ Pod::Spec.new do |s|
   s.source_files  = "ios/**/*.{h,m}"
 
   s.dependency 'React'
-  s.dependency "Helpshift", "7.6.3"
+  s.dependency "Helpshift", "7.7.0"
 end
