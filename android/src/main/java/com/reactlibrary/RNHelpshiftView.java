@@ -6,6 +6,12 @@ import android.net.Uri;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.LinearLayout;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
@@ -18,8 +24,8 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.view.ReactViewGroup;
-
 import com.helpshift.Core;
+import com.helpshift.CoreInternal;
 import com.helpshift.HelpshiftUser;
 import com.helpshift.InstallConfig;
 import com.helpshift.delegate.AuthenticationFailureReason;
@@ -30,11 +36,6 @@ import com.helpshift.support.Support;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 public class RNHelpshiftView extends ViewGroupManager<ReactViewGroup> implements Support.Delegate {
 
@@ -51,21 +52,24 @@ public class RNHelpshiftView extends ViewGroupManager<ReactViewGroup> implements
     @Override
     public ReactViewGroup createViewInstance(ThemedReactContext context)  {
         final ReactViewGroup reactView = new ReactViewGroup(context);
-
         mReactContext = context;
-
         mApplication = (Application)context.getApplicationContext();
-
         return reactView;
     }
 
     @ReactProp(name = "config")
     public void setConfig(final ReactViewGroup reactView, ReadableMap config) {
-        Support.setDelegate(this);
+        Map<String, Object> extras = new HashMap<>();
+        extras.put("manualLifecycleTracking", true);
+        extras.put("enableDefaultConversationalFiling", true);
+        InstallConfig installConfig = new InstallConfig.Builder().setExtras(extras).build();
+
+
         Core.init(Support.getInstance());
-        InstallConfig installConfig = new InstallConfig.Builder().build();
+
         try {
             Core.install(mApplication,  config.getString("apiKey"),  config.getString("domain"),  config.getString("appId"), installConfig);
+            CoreInternal.onAppForeground();
         } catch (InstallException e) {
             Log.e("Helpshift", "invalid install credentials : ", e);
         }
@@ -73,20 +77,24 @@ public class RNHelpshiftView extends ViewGroupManager<ReactViewGroup> implements
         if (config.hasKey("user")) {
             this.login(config.getMap("user"));
         }
+        Support.setDelegate(this);
 
         Activity activity = mReactContext.getCurrentActivity();
         final FragmentManager fragmentManager = ((AppCompatActivity)activity).getSupportFragmentManager();
         final Fragment helpshiftFragment;
-        Map<String, Object> extras = new HashMap<>();
-        extras.put("enableDefaultConversationalFiling", true);
+;
 
         if (config.hasKey("cifs")) {
-            ApiConfig apiConfig = new ApiConfig.Builder().setExtras(extras).setCustomIssueFields(getCustomIssueFields(config.getMap("cifs"))).build();
-            helpshiftFragment = Support.getConversationFragment(activity, apiConfig);
+            ApiConfig apiConfig = new ApiConfig.Builder().setCustomIssueFields(getCustomIssueFields(config.getMap("cifs"))).build();
+            Support.showConversation(mReactContext.getCurrentActivity(), apiConfig);
+
         } else {
-            ApiConfig apiConfig = new ApiConfig.Builder().setExtras(extras).build();
-            helpshiftFragment = Support.getConversationFragment(activity, apiConfig);
+            Support.showConversation(mReactContext.getCurrentActivity());
+
         }
+
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, 0);
+
 
         reactView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -101,7 +109,6 @@ public class RNHelpshiftView extends ViewGroupManager<ReactViewGroup> implements
             }
         });
 
-        fragmentManager.beginTransaction().replace(reactView.getId(), helpshiftFragment).commit();
     }
 
     private void login(ReadableMap user){

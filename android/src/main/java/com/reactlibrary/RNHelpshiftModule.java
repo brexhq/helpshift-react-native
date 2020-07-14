@@ -1,28 +1,6 @@
 
 package com.helpshift.reactlibrary;
 
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
-
-import java.io.File;
-import java.util.Map;
-import java.util.HashMap;
-
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.helpshift.Core;
-import com.helpshift.delegate.AuthenticationFailureReason;
-import com.helpshift.exceptions.InstallException;
-import com.helpshift.support.Support;
-import com.helpshift.HelpshiftUser;
-import com.helpshift.support.ApiConfig;
-
 import android.app.Activity;
 import android.app.Application;
 import android.net.Uri;
@@ -32,6 +10,29 @@ import android.os.Message;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.helpshift.Core;
+import com.helpshift.CoreInternal;
+import com.helpshift.HelpshiftUser;
+import com.helpshift.InstallConfig;
+import com.helpshift.delegate.AuthenticationFailureReason;
+import com.helpshift.exceptions.InstallException;
+import com.helpshift.support.ApiConfig;
+import com.helpshift.support.Support;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RNHelpshiftModule extends ReactContextBaseJavaModule implements Support.Delegate {
 
@@ -54,9 +55,15 @@ public class RNHelpshiftModule extends ReactContextBaseJavaModule implements Sup
 
     @ReactMethod
     public void init(String key, String domain, String appid) throws InstallException {
-        Support.setDelegate(this);
+        Map<String, Object> extras = new HashMap<>();
+        extras.put("manualLifecycleTracking", true);
+        extras.put("enableDefaultConversationalFiling", true);
+        InstallConfig installConfig = new InstallConfig.Builder().setExtras(extras).build();
+
         Core.init(Support.getInstance());
-        Core.install(this.app, key, domain, appid);
+        Core.install(this.app, key, domain, appid,installConfig);
+        CoreInternal.onAppForeground();
+        Support.setDelegate(this);
     }
 
     @ReactMethod
@@ -91,12 +98,14 @@ public class RNHelpshiftModule extends ReactContextBaseJavaModule implements Sup
 
     @ReactMethod
     public void showConversation(){
+
         final Activity activity = getCurrentActivity();
         Support.showConversation(activity);
     }
 
     @ReactMethod
     public void showConversationWithCIFs(ReadableMap cifs){
+
         final Activity activity = getCurrentActivity();
         ApiConfig apiConfig = new ApiConfig.Builder().setCustomIssueFields(getCustomIssueFields(cifs)).build();
         Support.showConversation(activity, apiConfig);
@@ -132,7 +141,7 @@ public class RNHelpshiftModule extends ReactContextBaseJavaModule implements Sup
                 Integer count = countData.getInt("value");
                 WritableMap params = Arguments.createMap();
                 params.putInt("count", count);
-                sendEvent(mReactContext, "Helpshift/DidReceiveUnreadMessagesCount", params);
+                sendEvent(mReactContext, "didReceiveUnreadMessagesCount", params);
             }
         };
 
